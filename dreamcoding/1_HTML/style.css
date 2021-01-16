@@ -1,0 +1,54 @@
+/* selecor {
+  property: value;
+} */
+
+* {
+    color: black;
+  }
+  
+  
+  li {
+    color: pink;
+  }
+  
+  
+  li#special {
+    color: skyblue;
+  }
+  
+  .lightgreen {
+    width: 150px;
+    height: 150px;
+    
+    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 50px;
+    /*시계방향으로 padding */
+    padding: 10px 10px 20px 30px;
+  
+    border-width: 2px;
+    border-style: solid;
+    border-color: skyblue;
+    /* 이것도 시계방향  */
+    border: 2px dashed red;
+    
+    /*자세한건 CSS reference 참조*/
+     
+    margin: 20px;
+    
+    background: lightgreen;
+  }
+  
+  button:hover {
+    color: orange;
+    background: beige;
+  }
+  
+  a[href$=".com"] {
+    color: #00AFFF;
+  }
+  
+  a[href^="n"] {
+    color:purple;
+  }
+  
