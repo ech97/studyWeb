@@ -1,0 +1,109 @@
+/* 
+FLEXBOX
+    container prop
+        display
+        flex-direction
+        flex-wrap
+        flex-flow
+        justify-content
+        align-items
+        align-content
+
+    item prop    
+        order
+        flex-grow
+        flex-shrink
+        flex
+        align-self
+*/
+
+
+.container{
+    background: beige;
+    height: 100vh;
+    /*view height*/
+    /*%로 하게되면 부모의 크기만큼의 퍼센트*/
+    display: flex;
+    /* flex 선언 */
+    
+    flex-direction: row-reverse;
+    flex-wrap: wrap-reverse;
+    flex-flow: row wrap;
+
+    justify-content: space-evenly;
+    /*
+    설정한 direction에서 정렬
+
+    flex-start, end
+    center
+    space-around, between, evenly
+    */
+
+
+    align-content: center;
+    /* 
+    설정한 축의 반대축에서의 배치
+    */
+
+    align-items: center;
+    /* 
+    baseline
+    center
+    */
+
+}
+
+
+.item {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+}
+.item1 {
+    background: #558b2f;
+
+    /* 순서 바꾸기 */
+    order: 5;
+
+    /* 화면 크기에 맞춰서 변형시키는 정도 */
+    flex-grow: 1;
+
+    /* 줄어들때의 비율 설정 */
+    flex-shrink: 2;
+
+    /* grow와 shrink에 대해 한번에 설정 (기본값: auto)*/
+    flex-basis: 65%;
+
+    /* 아이템별로 정렬 가능 */
+    align-self: center;
+}
+.item2 {
+    background: #85bb5c;
+
+    order: 3;
+    flex-grow: 2;
+}
+.item3 {
+    background: #65a763;
+}
+.item4 {
+    background: #4c8c4a;
+}
+.item5 {
+    background: #85bb5c;
+}
+.item6 {
+    background:#65a763;
+}
+.item7 {
+    background: #4c8c4a;
+}
+.item8 {
+    background: #85bb5c;
+}
+.item9 {
+    background: #4c8c4a;
+}
+.item10 {
+    background: #85bb5c;
+}

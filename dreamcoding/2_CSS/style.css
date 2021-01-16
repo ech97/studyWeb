@@ -1,0 +1,46 @@
+div, span {
+    width: 80px;
+    height: 80px;
+    margin: 20px;
+}
+
+ /* 
+ display 종류
+ 
+ inline
+ inline-block
+ block
+ */
+
+div {
+    background: #1375d8;
+    display: block;
+}
+
+span {
+    background: #b92fc5;
+    display:inline-block;
+}
+
+/*
+position의 종류
+
+static: 원래 있어야 하는 위치에 고정
+relative: 상대적으로 내가 설정한 만큼 움직임
+absolute: 절대 위치 (좌표)
+fixed: 태그 구역을 벗어난 절대 위치
+sticky: 스크롤을 내려도 원래있던 자리에 고정
+*/
+.container {
+    background: #bad813;
+    left: 20px;
+    top: 50px;
+    position: relative;
+}
+
+.box {
+    background: #dd6794;
+    left: 200px;
+    top: 50px;
+    position: absolute;
+}
