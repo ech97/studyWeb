@@ -26,4 +26,19 @@ number = int, float 등등을 number로 통합
 */
 
 // object
-const ellie = { name: 'Chan', age: 20};
+const ellie = { name: 'Chan', age: 20 };
+
+
+// 배열을 param으로 받음
+function printAll(...args){
+    for (let i = 0; i < args.length; i++){
+        console.log(args[i]);
+    }
+    // 파이썬 for in
+    for (const arg of args){
+        console.log(arg);
+    }
+}
+
+
+printAll('dream', 'coding', 'ellie');
