@@ -111,3 +111,23 @@ for(const value of array){
 
 
 console.clear();
+
+
+
+// 값 복사
+const user1 = {name: 'chan', age: 20};
+const user2 = user1;
+
+// 무식한 방식
+const user3 = {};
+for(const key in user1){
+    user3[key] = user1[key]; // 이렇게하면 key를 생성하고, value를 대입함
+}
+
+// Object 내장함수 사용
+let user4 = {};
+user4 = Object.assign(user4, user1);
+console.log(user4);
+// 또는
+const user5 = Object.assign({}, user1)
+console.log(user5);
