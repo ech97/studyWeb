@@ -131,3 +131,5 @@ console.log(user4);
 // 또는
 const user5 = Object.assign({}, user1)
 console.log(user5);
+
+
