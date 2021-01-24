@@ -29,7 +29,7 @@ printDelay(()=>console.log('hello async'), 1000);
 
 // Hell of Callback Function
 class UserStorage {
-    logginUser(id, password, onSuccess, onError){
+    logginUser(id, pw, onSuccess, onError){
         setTimeout(()=>{
             if(
                 (id === 'ellie' && pw === 'dream') ||
@@ -52,3 +52,27 @@ class UserStorage {
         }, 1000);
     }
 }
+
+const userStorage = new UserStorage();
+const id = prompt('enter your id');
+const pw = prompt('enter your pw');
+userStorage.logginUser(
+    id, 
+    pw, 
+    // id, pw가 맞다면 아래의 익명함수가 호출됨 (onSuccess(id))
+    function(user) {
+        userStorage.getRoles(
+            user, 
+            // user = id이므로, id가 일치한다면 함수에 구조체가 들어옴
+            function(userWithRole) {
+                alert(`hello ${userWithRole.name}, you have a ${userWithRole.role} role`);
+            },
+            (error) => {
+                console.log(error)
+            }
+        )
+    },
+    error => {
+        console.log(error);
+    }
+    )
