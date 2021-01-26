@@ -6,7 +6,7 @@ console.clear();
 
 
 
-// 1. async
+// //1. async
 // function fetchUser() {
 //     //do network request in 10 secs...
 

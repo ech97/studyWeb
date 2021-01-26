@@ -89,6 +89,8 @@ function Fish(name, size){
     // return this;
 }
 
+console.log('-------dlcks------');
+
 
 // 5. in op
 console.log('name' in Fish);
@@ -96,7 +98,6 @@ console.log('name' in Fish);
 
 // 6. for..in vs for..of
 // for (key in obj)
-console.clear();
 for (const key in fish3){
     console.log(key);
 }
@@ -110,8 +111,7 @@ for(const value of array){
 }
 
 
-console.clear();
-
+console.log('-------------');
 
 
 // 값 복사
