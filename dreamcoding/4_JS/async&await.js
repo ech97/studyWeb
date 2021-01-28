@@ -78,7 +78,7 @@ async function pickFruits() {
     } catch(e) {
         console.log('error ㅅㄱㅇ!');
     }
-}
+};
 
 pickFruits().then(console.log);
 // 근데 이렇게 하면 병렬처리의 의미가 없어짐
