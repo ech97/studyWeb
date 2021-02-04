@@ -94,6 +94,7 @@ console.log(sum/5);
 
 // 현재값 = curr, 이전 return값 = prev // 초기값 설정 가능
 // reculsive랑 느낌이 같디같디.
+// prev가 아닌 누적값으로 생각
 // Arrow Func.은 return 생략된거
 result_qz = students.reduce((prev, curr) => prev + curr.score, 0);
 
