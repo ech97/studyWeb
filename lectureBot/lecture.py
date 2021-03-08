@@ -5,6 +5,8 @@ pip install selenium
 pip install lxml
 
 # 강의 모드 추가 (마프같은 강의는 바꿔줘얗마)
+
+@@ 강의 검사모드 / 실행모드 제작
 '''
 
 import requests
@@ -17,6 +19,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import ctypes
 import datetime
 import subprocess
 import platform
@@ -26,12 +29,11 @@ import os
 #---Variable---#
 driver_path = './chromedriver.exe'
 chrome_path = 'C:/Program Files/Google/Chrome/Application'
-print(chrome_path)
+chrome_cmd = 'chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTEMP"'
 
-instr = 'cd '+chrome_path
-instr2 = 'chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTEMP"'
+instr = 'cd '+ chrome_path
 
-lecture_num = 6
+lecture_num = 7
 lecture_list = []
 
 t = datetime.datetime.now()
@@ -62,7 +64,11 @@ if lang == 'en':
     splitSec = 'Second'
 
 #---Settings---#
-subprocess.call(instr + '&&' + instr2, shell=True)
+# ctypes.windll.shell32.ShellExecuteA(0, 'open', instr + '&&' + chrome_cmd, None, None, 1)
+
+# os.startfile(chrome_path + '/' + chrome_cmd)
+
+subprocess.call(instr + ' && ' + chrome_cmd, shell=True)
 
 
 chrome_options = Options()
@@ -185,7 +191,8 @@ for x in range(lecture_num + 1):
     browser.get(url2)
     WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'content-title')))
 
-    number = int(input('\nchoose your lecture: '))
+    # number = int(input('\nchoose your lecture: '))
+    number = x
 
     elem = browser.find_elements_by_class_name('content-title')
     elem[number].click()
@@ -227,7 +234,13 @@ for x in range(lecture_num + 1):
             a = len(lecture_times)
 
 
+            adjointFlag = False
+            adjointLecture = 0
+            prev_idx = 0
+            click_idx = 0
+
             for idx in range(a):
+
                 # print(lecture_times[idx].split('/'))
                 
                 # 기간 내 학습시간
@@ -243,14 +256,42 @@ for x in range(lecture_num + 1):
 
                 # 강의 시청
                 if play_sec > 0:
-                    browser.find_elements_by_class_name('view')[idx].click()
+
+                    if adjointFlag == False:
+                        click_idx = idx
+                        browser.find_elements_by_class_name('view')[click_idx].click()
+
+                    elif adjointFlag == True:
+                        if idx < adjointLecture:
+                            click_idx = 0
+                            browser.find_element_by_class_name('view')[click_idx].click()
+                            browser.find_element_by_class_name('item-title-lesson')[idx].click()
+
+                        else:
+                            browser.find_element_by_class_name('view')[idx - adjointLecture + 1].click()
+
+
                     # 인증창 뜰수있음
                     try:
                         WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.ID, 'close_')))
                     except:
+                        # 다른 브라우저에서 강의를 시청중입니다@@
                         print("현재 인증창이 떴습니다 30초안에 해결해주세요")
+                        # 인증기기목록 보여주기@@@
+                        # 인증방법 선택@@@
                         time.sleep(30)
 
+                    ## 한개의 view에 여러 과목이 있는 경우@@@ 이때는 close를 클릭하는게 아닌 다음 강의시간을 확인하고 넘기기. 하지만 다음 강의가 다른 view에 할당되어있다면 골치아파지는겨
+                    ## idx를 딸림강의 개수만큼 조작해서 view를 클릭하게 할까?
+                    soup = BeautifulSoup(browser.page_source, "lxml")
+                    adjointLecture = len(soup.find_all('div', attrs={'class':'item-title-lesson'}))
+                    
+                    if adjointLecture > 1:
+                        prev_idx = idx
+
+                        adjointFlag = True
+                    
+                    
                     time.sleep(play_sec // 500)
                     
                     browser.find_element_by_id('close_').click()
