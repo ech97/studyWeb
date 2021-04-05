@@ -5,7 +5,7 @@ pip install selenium
 pip install lxml
 
 # 강의 모드 추가 (마프같은 강의는 바꿔줘얗마)
-
+# 꼭 다른 브라우저에서는 실행되고 있지 않아야함.
 @@ 강의 검사모드 / 실행모드 제작
 '''
 
@@ -28,10 +28,10 @@ import os
 
 #---Variable---#
 driver_path = './chromedriver.exe'
-chrome_path = 'C:/Program Files/Google/Chrome/Application'
-chrome_cmd = 'chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTEMP"'
+# chrome_path = 'C:/Program Files/Google/Chrome/Application'
+# chrome_cmd = 'chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTEMP"'
 
-instr = 'cd '+ chrome_path
+# instr = 'cd '+ chrome_path
 
 lecture_num = 7
 lecture_list = []
@@ -49,7 +49,8 @@ my_id = 'ech97'
 my_pw = '@@sg1234'
 
 
-lang = 'en' # 'ko' && 'en'
+lang = 'ko' # 'ko' && 'en'
+
 
 #---Language---#
 
@@ -63,23 +64,32 @@ if lang == 'en':
     splitMin = 'Min'
     splitSec = 'Second'
 
+
 #---Settings---#
+
 # ctypes.windll.shell32.ShellExecuteA(0, 'open', instr + '&&' + chrome_cmd, None, None, 1)
-
 # os.startfile(chrome_path + '/' + chrome_cmd)
+# subprocess.call(instr + ' && ' + chrome_cmd, shell=True)
 
-subprocess.call(instr + ' && ' + chrome_cmd, shell=True)
 
 
-chrome_options = Options()
-chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 
-browser = webdriver.Chrome(driver_path, options=chrome_options)
+# chrome_options = Options()
+# chrome_options.add_argument("User-Agent = Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
+# # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+# # headers = {"User-Agent = Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"}
+# browser = webdriver.Chrome(driver_path, chrome_options=chrome_options)
 
-'''
-headers = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36",
-            "Accept-Language" : "ko-KR,ko"}
-'''
+
+
+
+browser = webdriver.Chrome(driver_path)
+# Setting user agent as Chrome/83.0.4103.97
+browser.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'})
+# Setting user agent as Chrome/83.0.4103.53
+browser.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.53 Safari/537.36'})
+
+
 
 #---Function---#
 
@@ -110,16 +120,15 @@ def time_parser(time, flag = False):
                 a = [x for x in a if x]
                 minute = int(a[0])
                     
-                if splitSec in a[1]: 
+                if len(a) > 1: 
                     a = a[1].strip().split(splitSec)
                     a = [x for x in a if x]
                     second = int(a[0])
 
-            elif splitSec in a[1]: 
+            elif splitSec in a[1]:
                 a = a[1].strip().split(splitSec)
                 a = [x for x in a if x]
                 second = int(a[0])
-
 
         else:
             if splitMin in a:
@@ -180,12 +189,15 @@ lecture_list = list(map(get_text, soup.find_all(attrs = {"class" : "content-titl
 print('num\t|\tlecture')
 for idx, name in enumerate(lecture_list):
     print(f'{idx}\t|\t{name}')
-    if idx >= lecture_num:
-        break
+    '''임시로 수정'''
+    #if idx >= lecture_num:
+        #break
 
+# time.sleep(5)    
+iiidx = 0
 
 number = 0
-for x in range(lecture_num + 1):
+for x in range(lecture_num):
     # select lecture
 
     browser.get(url2)
@@ -198,7 +210,7 @@ for x in range(lecture_num + 1):
     elem[number].click()
     clear()
 
-    print(f'You chose {lecture_list[number]}')
+    print(f'현재강의: {lecture_list[number]}')
 
 
     # lecture info
@@ -210,6 +222,7 @@ for x in range(lecture_num + 1):
 
 
     soup = BeautifulSoup(browser.page_source, "lxml")
+    
     lecture_info = soup.find_all(attrs = {"class" : "wb-status"})[curr_week_ind].get_text()
 
     print(f'\n------ today is {curr_week}th week ------\n')
@@ -217,7 +230,6 @@ for x in range(lecture_num + 1):
 
     if lecture_info:
         a = list(map(int, lecture_info.split('/')))
-
         if a[0] < a[1]:
             print("There are still lectures left to take.")
             
@@ -226,89 +238,82 @@ for x in range(lecture_num + 1):
 
             ## 강의 들어가기
             browser.find_elements_by_class_name("wb-week-on")[curr_week_ind].click()
+            WebDriverWait(browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'view')))
+            
+        
             soup = BeautifulSoup(browser.page_source, "lxml")
 
 
             ## 강의시간 체크
             lecture_times = list(map(get_text, soup.find_all("div", attrs = {"style" : "float: left;margin-left: 7px;margin-top:3px;"})))
             a = len(lecture_times)
-
-
-            adjointFlag = False
-            adjointLecture = 0
-            prev_idx = 0
-            click_idx = 0
+            print(a)
 
             for idx in range(a):
 
+                iiidx += 1
+                if iiidx < 2:
+                    continue
+                time.sleep(3)
+                
                 # print(lecture_times[idx].split('/'))
                 
                 # 기간 내 학습시간
                 my_sec = time_parser(lecture_times[idx].split('/')[0], flag = True)
-                
                 # 필요 학습시간
                 class_sec = time_parser(lecture_times[idx].split('/')[2], flag = True)
 
-                print(my_sec, class_sec)
+                # print(my_sec, class_sec)
 
                 play_sec = class_sec - my_sec
-
-
+                
+                leftH, leftM, leftS = time_parser(play_sec, flag = False)
+                left_time = '{0}시간 {1}분 {2}초'.format(leftH, leftM, leftS)
+                
                 # 강의 시청
                 if play_sec > 0:
 
-                    if adjointFlag == False:
-                        click_idx = idx
-                        browser.find_elements_by_class_name('view')[click_idx].click()
-
-                    elif adjointFlag == True:
-                        if idx < adjointLecture:
-                            click_idx = 0
-                            browser.find_element_by_class_name('view')[click_idx].click()
-                            browser.find_element_by_class_name('item-title-lesson')[idx].click()
-
-                        else:
-                            browser.find_element_by_class_name('view')[idx - adjointLecture + 1].click()
-
-
+                    elemClass = browser.find_elements_by_class_name('site-mouseover-color')[idx]
+                    elemClass.click()
+                    b = elemClass.text
+                    #b = browser.find_elements_by_class_name('site-mouseover-color')[idx].text
+                    
                     # 인증창 뜰수있음
                     try:
                         WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.ID, 'close_')))
                     except:
-                        # 다른 브라우저에서 강의를 시청중입니다@@
-                        print("현재 인증창이 떴습니다 30초안에 해결해주세요")
+                        # 다른 브라우저에서 강의를 시청중입니다@@@@@
+                        '''
+                        한번더 try문을 쓴다면?!
+                        '''
+                        print("현재 인증창이 떴습니다 60초안에 해결해주세요")
+                        try:
+                            WebDriverWait(browser, 60).until(EC.presence_of_element_located((By.ID, 'close_')))
+                        except:
+                            time.sleep(30)                    
                         # 인증기기목록 보여주기@@@
                         # 인증방법 선택@@@
-                        time.sleep(30)
+                        # 인증하면 바로 다음단계로 넘어갈수있게할까...
+                    
+                    print(f'[{b}] 강의를   [{left_time}] 동안 수강합니다.')
 
-                    ## 한개의 view에 여러 과목이 있는 경우@@@ 이때는 close를 클릭하는게 아닌 다음 강의시간을 확인하고 넘기기. 하지만 다음 강의가 다른 view에 할당되어있다면 골치아파지는겨
-                    ## idx를 딸림강의 개수만큼 조작해서 view를 클릭하게 할까?
-                    soup = BeautifulSoup(browser.page_source, "lxml")
-                    adjointLecture = len(soup.find_all('div', attrs={'class':'item-title-lesson'}))
-                    
-                    if adjointLecture > 1:
-                        prev_idx = idx
-
-                        adjointFlag = True
-                    
-                    
-                    time.sleep(play_sec // 500)
+                    time.sleep(play_sec + 10)
                     
                     browser.find_element_by_id('close_').click()
-                    time.sleep(2)
+                    time.sleep(7)
                     try:
                         browser.switch_to.alert.accept()
+                        time.sleep(4)
                     except:
                         continue
                     
 
                 # 한 강의에 여러개의 딸림강의가 있는 경우
-                # navi-tables 의 li태그 개수가 1개가 넘어가는경우@@
 
             # 다음강의 체크하러 고고씽
 
         elif a[0] == a[1]:
             print('이미 모든 강의를 수강하였습니다.')
 
-
+    time.sleep(1)
 
