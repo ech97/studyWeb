@@ -193,11 +193,13 @@ for idx, name in enumerate(lecture_list):
     #if idx >= lecture_num:
         #break
 
+
+
 # time.sleep(5)    
 iiidx = 0
 
 number = 0
-for x in range(lecture_num):
+for x in range(3, lecture_num):
     # select lecture
 
     browser.get(url2)
@@ -223,7 +225,11 @@ for x in range(lecture_num):
 
     soup = BeautifulSoup(browser.page_source, "lxml")
     
-    lecture_info = soup.find_all(attrs = {"class" : "wb-status"})[curr_week_ind].get_text()
+    try:
+        lecture_info = soup.find_all(attrs = {"class" : "wb-status"})[curr_week_ind].get_text()
+    except:
+        print('아직은 수강기간이 아닙니다')
+        continue
 
     print(f'\n------ today is {curr_week}th week ------\n')
 
@@ -238,22 +244,27 @@ for x in range(lecture_num):
 
             ## 강의 들어가기
             browser.find_elements_by_class_name("wb-week-on")[curr_week_ind].click()
-            WebDriverWait(browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'view')))
             
-        
+            # WebDriverWait(browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, 'graph_gage site-background-color')))
+            time.sleep(3)
+
             soup = BeautifulSoup(browser.page_source, "lxml")
 
 
             ## 강의시간 체크
             lecture_times = list(map(get_text, soup.find_all("div", attrs = {"style" : "float: left;margin-left: 7px;margin-top:3px;"})))
-            a = len(lecture_times)
-            print(a)
+            
+            # a = len(lecture_times)
+            # print(a)
 
-            for idx in range(a):
+            elemClasses = browser.find_elements_by_class_name('site-mouseover-color')
+            
+            if(len(elemClasses) == 0):
+                print("아직은 수강기간이 아닙니다")
 
-                iiidx += 1
-                if iiidx < 2:
-                    continue
+            for idx in range(len(elemClasses)):
+
+                elemClass = elemClasses[idx]
                 time.sleep(3)
                 
                 # print(lecture_times[idx].split('/'))
@@ -272,8 +283,6 @@ for x in range(lecture_num):
                 
                 # 강의 시청
                 if play_sec > 0:
-
-                    elemClass = browser.find_elements_by_class_name('site-mouseover-color')[idx]
                     elemClass.click()
                     b = elemClass.text
                     #b = browser.find_elements_by_class_name('site-mouseover-color')[idx].text
@@ -297,7 +306,7 @@ for x in range(lecture_num):
                     
                     print(f'[{b}] 강의를   [{left_time}] 동안 수강합니다.')
 
-                    time.sleep(play_sec + 10)
+                    time.sleep(play_sec//500)
                     
                     browser.find_element_by_id('close_').click()
                     time.sleep(7)
